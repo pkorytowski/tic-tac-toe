@@ -2,7 +2,7 @@ import pygame as pg
 
 
 def comp_move(board):
-    best_score = -10000  # -inf
+    best_score = float("-inf")  # -inf
     best_move = -1
     possible_moves = [x for x, sign in enumerate(board) if sign[1] == 'empty']
     for k in possible_moves:
@@ -25,8 +25,8 @@ def equals3(a, b, c):
 def check_winner(board):
     winner = 'no_winners'
     # Checking for rows
-    for k in range(0,7,3):
-        if equals3(board[k][1],board[k+1][1], board[k+2][1]):
+    for k in range(0, 7, 3):
+        if equals3(board[k][1], board[k+1][1], board[k+2][1]):
             winner = board[k][1]
     # Checking columns
     for k in range(3):
@@ -79,28 +79,55 @@ def minimax(board, depth, is_maximizing):
         return best_score
 
 
-def text_info(board):
+def text_objects(text, font):
+    text_surface = font.render(text, True, (0, 0, 0))
+    return text_surface, text_surface.get_rect()
+
+
+def reset_board():
+    win.fill((0, 0, 0))
+    for element in squares:
+        pg.draw.rect(win, (255, 255, 255), (element[0].x, element[0].y, 120, 120))
+        element[1] = 'empty'
+
+
+def button(window, color, x, y, w, h):
+    pg.draw.rect(window, color, (x, y, w, h))
+    small_text = pg.font.SysFont("comicsansms", 20)
+    text_surf, text_rect = text_objects("New Game", small_text)
+    text_rect.center = ((x+(w/2)), (y+(h/2)))
+    window.blit(text_surf, text_rect)
+    click = pg.mouse.get_pressed()
+    mouse_pos = pg.mouse.get_pos()
+    if click[0]:
+        if x <= mouse_pos[0] <= x+w and y <= mouse_pos[1] <= y+h:
+            reset_board()
+
+
+def text_info(board, window):
     font = pg.font.SysFont('Comic Sans MS', 40)
     text = font.render(check_winner(board) + ' won', True, (255, 0, 0), (255, 255, 255))
     text_rect = text.get_rect()
-    text_rect.center = (275, 275)
+    text_rect.center = (225, 300)
     win.blit(text, text_rect)
+    button(window, (0, 255, 0), 175, 170, 100, 50)
+
 
 # preparing window
 pg.init()
-win = pg.display.set_mode((550, 550))
+win = pg.display.set_mode((450, 600))
 
 pg.display.set_caption('Tic-Tac-Toe')
+
 
 # preparing board
 squares = []
 for i in range(3):
     for j in range(3):
-        squares.append([pg.draw.rect(win, (255, 255, 255), (25 + j*175, 25 + i*175, 150, 150)), 'empty'])
+        squares.append([pg.draw.rect(win, (255, 255, 255), (25 + j*140, 140 + i*140, 120, 120)), 'empty'])
 
 run = True
 draw_object = 'rect'  # Flag which decides what shape should be drawn
-
 
 # Main game loop
 while run:
@@ -110,22 +137,23 @@ while run:
             run = False
         if check_winner(squares) == 'no_winners':
             # player clicks and it's his turn
-            if event.type == pg.MOUSEBUTTONUP and draw_object == 'rect':
+            if event.type == pg.MOUSEBUTTONDOWN and draw_object == 'rect':
                 pos = pg.mouse.get_pos()
                 for element in squares:
                     if element[0].collidepoint(pos) and element[1] == 'empty':
-                        pg.draw.rect(win, (0, 255, 0), (element[0].x + 25, element[0].y + 25, 100, 100))
+                        pg.draw.rect(win, (0, 255, 0), (element[0].x + 20, element[0].y + 20, 80, 80))
                         draw_object = 'circle'
                         element[1] = 'rect'
             # it's "computers" turn
             elif draw_object == 'circle':
                 pos = comp_move(squares)
                 pg.time.delay(400)
-                pg.draw.circle(win, (0, 0, 255), (squares[pos][0].x + 75, squares[pos][0].y + 75), 50)
+                pg.draw.circle(win, (0, 0, 255), (squares[pos][0].x + 60, squares[pos][0].y + 60), 40)
                 draw_object = 'rect'
                 squares[pos][1] = 'circle'
         else:
-            text_info(squares)
+            text_info(squares, win)
+
 
     pg.display.update()
 pg.quit()
