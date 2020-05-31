@@ -118,17 +118,18 @@ def button(window, PC_score, player_score):
     mouse_pos = pg.mouse.get_pos()
     if click[0]:
         if x <= mouse_pos[0] <= x+w and y <= mouse_pos[1] <= y+h:
-            reset_board()
             PC_score, player_score = counter(check_winner(squares), PC_score, player_score)
+            reset_board()
 
     return PC_score, player_score
+
 
 def text_info(board, window, PC_score, player_score):
     font = pg.font.SysFont('Comic Sans MS', 40)
     text = font.render(check_winner(board) + ' won!', True, (255, 0, 0), (255, 255, 255))
 
     if check_winner(board) == 'tie':
-        text = font.render('It\'a tie!', True, (255, 0, 0), (255, 255, 255))
+        text = font.render('It\'s a tie!', True, (255, 0, 0), (255, 255, 255))
 
     text_rect = text.get_rect()
     text_rect.center = (225, 300)
