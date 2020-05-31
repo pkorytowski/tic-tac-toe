@@ -89,11 +89,28 @@ def reset_board():
     for element in squares:
         pg.draw.rect(win, (255, 255, 255), (element[0].x, element[0].y, 120, 120))
         element[1] = 'empty'
+    
+def counter(result, PC_score, player_score):
 
+    if result == 'tie':
+        PC_score += 1
+        player_score += 1
+    if result == 'circle':
+        PC_score += 1
+    if result == 'rect':
+        player_score += 1
+    
+    return PC_score, player_score
 
-def button(window, color, x, y, w, h):
+def button(window, PC_score, player_score):
+    color = (219, 48, 165)
+    x = 125
+    y = 170
+    w = 200
+    h = 50
+
     pg.draw.rect(window, color, (x, y, w, h))
-    small_text = pg.font.SysFont("comicsansms", 20)
+    small_text = pg.font.SysFont("comicsansms", 40)
     text_surf, text_rect = text_objects("New Game", small_text)
     text_rect.center = ((x+(w/2)), (y+(h/2)))
     window.blit(text_surf, text_rect)
@@ -102,22 +119,45 @@ def button(window, color, x, y, w, h):
     if click[0]:
         if x <= mouse_pos[0] <= x+w and y <= mouse_pos[1] <= y+h:
             reset_board()
+            PC_score, player_score = counter(check_winner(squares), PC_score, player_score)
 
+    return PC_score, player_score
 
-def text_info(board, window):
+def text_info(board, window, PC_score, player_score):
     font = pg.font.SysFont('Comic Sans MS', 40)
-    text = font.render(check_winner(board) + ' won', True, (255, 0, 0), (255, 255, 255))
+    text = font.render(check_winner(board) + ' won!', True, (255, 0, 0), (255, 255, 255))
+
+    if check_winner(board) == 'tie':
+        text = font.render('It\'a tie!', True, (255, 0, 0), (255, 255, 255))
+
     text_rect = text.get_rect()
     text_rect.center = (225, 300)
     win.blit(text, text_rect)
-    button(window, (0, 255, 0), 175, 170, 100, 50)
+    PC_score, player_score = button(window, PC_score, player_score)
+    return PC_score, player_score
+
+
+def score_board(window, PC_score, player_score):
+    font = pg.font.SysFont('Comic Sans MS', 40)
+    
+    PC = font.render('PC: ' + str(PC_score),  True, (255, 255, 255), (0, 0, 0))
+    player = font.render('Player: ' + str(player_score), True, (255, 255, 255), (0, 0, 0))
+
+    PC_pos = PC.get_rect()
+    PC_pos.center = (50, 25)
+
+    player_pos = player.get_rect()
+    player_pos.center = (300, 25)
+
+    window.blit(PC, PC_pos)
+    window.blit(player, player_pos)
 
 
 # preparing window
 pg.init()
 win = pg.display.set_mode((450, 600))
+pg.display.set_caption('Tic-Tac-Toe!')
 
-pg.display.set_caption('Tic-Tac-Toe')
 
 
 # preparing board
@@ -129,8 +169,15 @@ for i in range(3):
 run = True
 draw_object = 'rect'  # Flag which decides what shape should be drawn
 
+PC_score = 0
+player_score = 0
+clock = pg.time.Clock()
+
 # Main game loop
 while run:
+    
+    score_board(win, PC_score, player_score)
+
     for event in pg.event.get():
         # clicking quit button
         if event.type == pg.QUIT:
@@ -152,9 +199,9 @@ while run:
                 draw_object = 'rect'
                 squares[pos][1] = 'circle'
         else:
-            text_info(squares, win)
-
+            PC_score, player_score = text_info(squares, win, PC_score, player_score)
 
     pg.display.update()
-pg.quit()
+    clock.tick(60)
 
+pg.quit()
