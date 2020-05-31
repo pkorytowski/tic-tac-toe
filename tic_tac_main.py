@@ -113,7 +113,7 @@ while run:
             if event.type == pg.MOUSEBUTTONUP and draw_object == 'rect':
                 pos = pg.mouse.get_pos()
                 for element in squares:
-                    if element[0].collidepoint(pos):
+                    if element[0].collidepoint(pos) and element[1] == 'empty':
                         pg.draw.rect(win, (0, 255, 0), (element[0].x + 25, element[0].y + 25, 100, 100))
                         draw_object = 'circle'
                         element[1] = 'rect'
