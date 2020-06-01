@@ -145,6 +145,25 @@ def text_info(board, window, PC_score, player_score, draw_object):
     return PC_score, player_score, draw_object
 
 
+def draw_turn(window, draw_object):
+    x = 200
+    y = 75
+    w = 200
+    h = 50
+
+    str = ''
+    if draw_object=='rect':
+        str = 'Your turn'
+    else:
+        str = "AI's turn"
+    pg.draw.rect(window, (0, 0, 0), (x, y, w, h))
+    font = pg.font.SysFont('Comic Sans MS', 40)
+    text = font.render(str, True, (255, 255, 255))
+    text_rect = text.get_rect()
+    text_rect.center = (x+w/2, y+h/2)
+    window.blit(text, text_rect)
+
+
 def score_board(window, PC_score, player_score):
     font = pg.font.SysFont('Comic Sans MS', 40)
     
@@ -185,7 +204,7 @@ clock = pg.time.Clock()
 while run:
     
     score_board(win, PC_score, player_score)
-
+    draw_turn(win, draw_object)
     for event in pg.event.get():
         # clicking quit button
         if event.type == pg.QUIT:
