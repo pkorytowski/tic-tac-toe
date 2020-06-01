@@ -84,12 +84,19 @@ def text_objects(text, font):
     return text_surface, text_surface.get_rect()
 
 
-def reset_board():
+def reset_board(draw_object):
+    winner = check_winner(squares)
+    if winner == 'rect':
+        draw_object = 'rect'
+    elif winner == 'circle':
+        draw_object = 'circle'
+
     win.fill((0, 0, 0))
     for element in squares:
         pg.draw.rect(win, (255, 255, 255), (element[0].x, element[0].y, 120, 120))
         element[1] = 'empty'
-    
+    return draw_object
+
 def counter(result, PC_score, player_score):
 
     if result == 'tie':
@@ -102,7 +109,7 @@ def counter(result, PC_score, player_score):
     
     return PC_score, player_score
 
-def button(window, PC_score, player_score):
+def button(window, PC_score, player_score, draw_object):
     color = (219, 48, 165)
     x = 125
     y = 170
@@ -119,12 +126,12 @@ def button(window, PC_score, player_score):
     if click[0]:
         if x <= mouse_pos[0] <= x+w and y <= mouse_pos[1] <= y+h:
             PC_score, player_score = counter(check_winner(squares), PC_score, player_score)
-            reset_board()
+            draw_object = reset_board(draw_object)
 
-    return PC_score, player_score
+    return PC_score, player_score, draw_object
 
 
-def text_info(board, window, PC_score, player_score):
+def text_info(board, window, PC_score, player_score, draw_object):
     font = pg.font.SysFont('Comic Sans MS', 40)
     text = font.render(check_winner(board) + ' won!', True, (255, 0, 0), (255, 255, 255))
 
@@ -134,8 +141,8 @@ def text_info(board, window, PC_score, player_score):
     text_rect = text.get_rect()
     text_rect.center = (225, 300)
     win.blit(text, text_rect)
-    PC_score, player_score = button(window, PC_score, player_score)
-    return PC_score, player_score
+    PC_score, player_score, draw_object = button(window, PC_score, player_score, draw_object)
+    return PC_score, player_score, draw_object
 
 
 def score_board(window, PC_score, player_score):
@@ -200,7 +207,7 @@ while run:
                 draw_object = 'rect'
                 squares[pos][1] = 'circle'
         else:
-            PC_score, player_score = text_info(squares, win, PC_score, player_score)
+            PC_score, player_score, draw_object = text_info(squares, win, PC_score, player_score, draw_object)
 
     pg.display.update()
     clock.tick(60)
