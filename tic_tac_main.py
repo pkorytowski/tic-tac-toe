@@ -146,9 +146,9 @@ def text_info(board, window, PC_score, player_score, draw_object):
 
 
 def draw_turn(window, draw_object):
-    x = 200
+    x = 0
     y = 75
-    w = 200
+    w = 450
     h = 50
 
     str = ''
@@ -160,7 +160,7 @@ def draw_turn(window, draw_object):
     font = pg.font.SysFont('Comic Sans MS', 40)
     text = font.render(str, True, (255, 255, 255))
     text_rect = text.get_rect()
-    text_rect.center = (x+w/2, y+h/2)
+    text_rect.center = (225, y+h/2)
     window.blit(text, text_rect)
 
 
