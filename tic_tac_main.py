@@ -42,7 +42,7 @@ def check_winner(board):
         if x[1] == 'empty':
             is_full = False
             break
-    if winner is 'no_winners' and is_full:
+    if winner == 'no_winners' and is_full:
         return 'tie'
     else:
         return winner
